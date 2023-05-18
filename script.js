@@ -4,7 +4,7 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
-
+const apiKey = "476f803b63576c60c48c20f0ba1cd92d"
 // Don't touch this function please
 const autorun = async () => {
   const movies = await fetchMovies();
@@ -37,7 +37,13 @@ const fetchMovie = async (movieId) => {
   const res = await fetch(url);
   return res.json();
 };
-
+//////////////fetchactors test/////////////
+const fetchActor = async (movieId) => {
+  const url = constructUrl(`movie/${movieId}/credits`);
+  const res = await fetch(url);
+  return res.json();
+};
+///////////////////////////////////
 // You'll need to play with this function in order to add features and enhance the style.
 const renderMovies = (movies) => {
   movies.map((movie) => {
@@ -53,7 +59,22 @@ const renderMovies = (movies) => {
     CONTAINER.appendChild(movieDiv);
   });
 };
-
+///////////////////renderactors test////////////////
+const renderActors = (movies) => {
+  movies.map((movie) => {
+    const movieDiv = document.createElement("div");
+    movieDiv.innerHTML = `
+        <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
+      movie.title
+    } poster">
+        <h3>${movie.title}</h3>`;
+    movieDiv.addEventListener("click", () => {
+      movieDetails(movie);
+    });
+    CONTAINER.appendChild(movieDiv);
+  });
+};
+/////////////////////////
 // You'll need to play with this function in order to add features and enhance the style.
 const renderMovie = (movie) => {
   CONTAINER.innerHTML = `
@@ -77,5 +98,10 @@ const renderMovie = (movie) => {
             <ul id="actors" class="list-unstyled"></ul>
     </div>`;
 };
+//////////////////////test fetch////////////////
+fetch("https://api.themoviedb.org/3/movie/551/credits?api_key=476f803b63576c60c48c20f0ba1cd92d")
+.then(res => res.json())
+.then(data => console.log(data))
 
+/////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", autorun);

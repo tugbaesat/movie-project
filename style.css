@@ -9,3 +9,11 @@
 #actors {
     margin: 24px 16px 0 0;
 }
+
+#hero{
+    width: 100%;
+    height: 800px;
+    background-image: url("https://occ.a.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABSpwEug4tuhVfawRFuDL8pHlyDgvXFolAz5G_YTKvMhzSqt4F0-3QFBt0zfBzMc8Af1RrWCEuz9r3C39Pud__t51SPP8PKyRNUnx.jpg?r=cec");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
