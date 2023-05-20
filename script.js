@@ -40,8 +40,6 @@ const renderSingleActor = (actor) => {
 
   const birthDeath = document.createElement("div")
 
-
-
   birthDeath.innerHTML = `
   
   <h2>Death:</h2>
@@ -97,6 +95,7 @@ const autorun = async () => {
 // You'll need to play with this function in order to add features and enhance the style.
 const renderMovies = (movies) => {
   CONTAINER.innerHTML = `` // Cleans page
+  console.log(movies);
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
@@ -239,7 +238,7 @@ const renderMovie = (movie) => {
 };
 
 ////////////////////test fetch////////////////
-fetch('https://api.themoviedb.org/3/person/500?api_key=476f803b63576c60c48c20f0ba1cd92d') //popular people
+fetch('https://api.themoviedb.org/3/movie/310131?api_key=476f803b63576c60c48c20f0ba1cd92d') //popular people
 // fetch("https://api.themoviedb.org/3/movie/550?api_key=476f803b63576c60c48c20f0ba1cd92d")
   .then(res => res.json())
   .then(data => console.log(data))
