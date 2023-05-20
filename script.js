@@ -22,6 +22,72 @@ const fetchMovies = async () => {
   return res.json();
 };
 
+const fetchActorList = async () => {
+  const url = constructUrl(`person/popular`);
+  const res = await fetch(url);
+  return res.json();
+};
+
+const fetchSingleActor = async (actorId) => {
+  const url = constructUrl(`person/${actorId}`);
+  const res = await fetch(url);
+  return res.json();
+};
+
+const renderSingleActor = (actor) => {
+  CONTAINER.innerHTML = `` // Cleans page
+  console.log(actor)
+
+  const birthDeath = document.createElement("div")
+
+
+
+  birthDeath.innerHTML = `
+  
+  <h2>Death:</h2>
+  <p>${actor.deathday}</p>
+  
+  `
+
+  let gender;
+  if(actor.gender === 2){
+    gender = "Male"
+  }else{
+    gender = "Female"
+  }
+
+  const actorDiv = document.createElement("div");
+  actorDiv.innerHTML = `
+  <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${actor.name} poster">
+  <h1>${actor.name}</h1>
+  <h2>Gender:</h2>
+  <p>${gender}</p>
+  
+  <h2>Popularity:</h2>
+  <p>${actor.popularity}</p>
+
+  
+  <h2>Bio:</h2>
+  <p>${actor.biography}</p>
+
+  <h2>Birthday:</h2>
+  <p>${actor.birthday}</p>
+  
+
+
+  `;
+  
+// - A biography about the actor
+// - A list of movies the actor participated in
+  CONTAINER.appendChild(actorDiv);
+
+  if(actor.deathday !== null){
+    CONTAINER.appendChild(birthDeath)
+  }
+
+};
+
+
 // Don't touch this function please
 const autorun = async () => {
   const movies = await fetchMovies();
@@ -43,6 +109,24 @@ const renderMovies = (movies) => {
   });
 };
 
+const renderActorsList = (actors) => {
+  CONTAINER.innerHTML = `` // Cleans page
+  console.log(actors)
+  actors.results.map((actor) => {
+    const actorDiv = document.createElement("div");
+
+    if(actor.known_for_department === "Acting"){
+          actorDiv.innerHTML = `
+              <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${actor.name} poster">
+              <h3>${actor.name}</h3>`;
+                  actorDiv.addEventListener("click", () => {
+                    actorDetails(actor.id);
+                  });
+    }
+    CONTAINER.appendChild(actorDiv);
+  });
+};
+
 // Don't touch this function please. This function is to fetch one movie.
 const fetchMovie = async (movieId) => {
   const url = constructUrl(`movie/${movieId}`);
@@ -57,7 +141,7 @@ const fetchActors = async (movieId) => {
   return res.json();
 };
 
-// This function is to fetch similar movies.
+// This function is to fetch similar actors.
 const fetchSimilar = async (movieId) => {
   const url = constructUrl(`movie/${movieId}/similar`);
   const res = await fetch(url);
@@ -77,6 +161,19 @@ const movieDetails = async (movie) => {
   renderSimilar(similarRes)
 }
 
+const actorDetails = async (actorId) => {
+  const movieRes = await fetchSingleActor(actorId);
+  renderSingleActor(movieRes);
+}
+
+const actorsPage = async () => {
+
+  const actors = await fetchActorList();
+  
+  renderActorsList(actors);
+
+}
+
 //Renders 5 Actors
 const renderActors = (actors) => {
   const cast = actors.cast
@@ -89,8 +186,11 @@ const renderActors = (actors) => {
       } poster">
         <h3>${cast[i].name}</h3>`;
     actorsUl.appendChild(actorLi);
+    actorLi.addEventListener("click", () => {
+      actorDetails(cast[i].id);
+    });
+  };
   }
-};
 
 //Renders 5 similar movies
 const renderSimilar = (movies) => {
@@ -139,7 +239,7 @@ const renderMovie = (movie) => {
 };
 
 ////////////////////test fetch////////////////
-fetch('https://api.themoviedb.org/3/person/popular?api_key=476f803b63576c60c48c20f0ba1cd92d') //popular people
+fetch('https://api.themoviedb.org/3/person/500?api_key=476f803b63576c60c48c20f0ba1cd92d') //popular people
 // fetch("https://api.themoviedb.org/3/movie/550?api_key=476f803b63576c60c48c20f0ba1cd92d")
   .then(res => res.json())
   .then(data => console.log(data))
@@ -147,3 +247,4 @@ fetch('https://api.themoviedb.org/3/person/popular?api_key=476f803b63576c60c48c2
 ///////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", autorun);
 homeBtn.addEventListener("click", autorun)
+actorsBtn.addEventListener("click", actorsPage)
