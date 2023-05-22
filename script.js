@@ -7,7 +7,7 @@ const CONTAINER = document.querySelector(".container");
 ////////////////////////////////////////////////////////////////
 const apiKey = "476f803b63576c60c48c20f0ba1cd92d";
 const homeBtn = document.querySelector("#homeBtn");
-
+const searchBar = document.querySelector("#default-search")
 // Don't touch this function please
 const constructUrl = (path) => {
   return `${TMDB_BASE_URL}/${path}?api_key=${atob(
@@ -37,9 +37,8 @@ const renderMovies = (movies) => {
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
-      movie.title
-    } poster">
+        <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${movie.title
+      } poster">
         <h3>${movie.title}</h3>
         `;
 
@@ -66,16 +65,14 @@ const renderMovie = (movie) => {
   CONTAINER.innerHTML = `
     <div class="row">
         <div class="col-md-4">
-             <img id="movie-backdrop" src=${
-               BACKDROP_BASE_URL + movie.backdrop_path
-             }>
+             <img id="movie-backdrop" src=${BACKDROP_BASE_URL + movie.backdrop_path
+    }>
         </div>
 
         <div class="col-md-8">
             <h2 id="movie-title">${movie.title}</h2>
-            <p id="movie-release-date"><b>Release Date:</b> ${
-              movie.release_date
-            }</p>
+            <p id="movie-release-date"><b>Release Date:</b> ${movie.release_date
+    }</p>
             <p id="movie-runtime"><b>Runtime:</b> ${movie.runtime} Minutes</p>
             <h3>Overview:</h3>
             <p id="movie-overview">${movie.overview}</p>
@@ -92,9 +89,8 @@ const renderMovie = (movie) => {
             <ul id="similar" class="list-unstyled"></ul>
             <h3>Production Company:</h3>
             <div>
-            <img id="movie-backdrop" src=${
-              BACKDROP_BASE_URL + movie.production_companies[0].logo_path
-            }>
+            <img id="movie-backdrop" src=${BACKDROP_BASE_URL + movie.production_companies[0].logo_path
+    }>
             <h3>${movie.production_companies[0].name}</h3>
             </div>
     </div>`;
@@ -115,9 +111,8 @@ const renderActors = (actors) => {
   for (let i = 0; i < 5; i++) {
     const actorLi = document.createElement("li");
     actorLi.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + cast[i].profile_path}" alt="${
-      cast[i].title
-    } poster">
+        <img src="${BACKDROP_BASE_URL + cast[i].profile_path}" alt="${cast[i].title
+      } poster">
         <h3>${cast[i].name}</h3>`;
     actorsUl.appendChild(actorLi);
     actorLi.addEventListener("click", () => {
@@ -141,9 +136,8 @@ const renderSimilar = (movies) => {
   for (let i = 0; i < 5; i++) {
     const similarLi = document.createElement("li");
     similarLi.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + similarMovies[i].poster_path}" alt="${
-      similarMovies[i].original_title
-    } poster">
+        <img src="${BACKDROP_BASE_URL + similarMovies[i].poster_path}" alt="${similarMovies[i].original_title
+      } poster">
         <h3>${similarMovies[i].original_title}</h3>`;
     similarLi.addEventListener("click", () => {
       movieDetails(similarMovies[i]);
@@ -208,9 +202,8 @@ const renderActorsList = (actors) => {
 
     if (actor.known_for_department === "Acting") {
       actorDiv.innerHTML = `
-              <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${
-        actor.name
-      } poster">
+              <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${actor.name
+        } poster">
               <h3>${actor.name}</h3>`;
       actorDiv.addEventListener("click", () => {
         actorDetails(actor.id);
@@ -252,9 +245,8 @@ const renderSingleActor = (actor) => {
 
   const actorDiv = document.createElement("div");
   actorDiv.innerHTML = `
-  <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${
-    actor.name
-  } poster">
+  <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${actor.name
+    } poster">
   <h1>${actor.name}</h1>
   <h2>Gender:</h2>
   <p>${gender}</p>
@@ -291,9 +283,8 @@ const renderActorMovies = (movies) => {
   for (let i = 0; i < 5; i++) {
     const actorLi = document.createElement("li");
     actorLi.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + movies.cast[i].poster_path}" alt="${
-      movies.cast[i].original_title
-    } poster">
+        <img src="${BACKDROP_BASE_URL + movies.cast[i].poster_path}" alt="${movies.cast[i].original_title
+      } poster">
         <h3>${movies.cast[i].original_title}</h3>`;
 
     actorLi.addEventListener("click", () => {
@@ -311,15 +302,85 @@ const actorDetails = async (actorId) => {
   renderActorMovies(relatedMovies);
 };
 
+//Searchbar
+
+const fetchSearchMovies = async (keyword) => {
+  const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=476f803b63576c60c48c20f0ba1cd92d&query=${keyword}`);
+  return res.json();
+};
+
+const fetchSearchActors = async (keyword) => {
+  const res = await fetch(`https://api.themoviedb.org/3/search/person?api_key=476f803b63576c60c48c20f0ba1cd92d&query=${keyword}`);
+  return res.json();
+};
+
+const renderSearchResults = (movies, actors) => {
+  const searchResultDropdown = document.querySelector("#searchResultDropdown")
+  searchResultDropdown.innerHTML = ``
+  const moviesList = movies.results
+  const actorsList = actors.results
+
+  if (moviesList.length === 0 && actorsList.length === 0) {
+    searchResultDropdown.innerHTML = `
+    <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">No Matching Results</button>
+    `
+  } else {
+
+    if (movies.total_results !== 0) {
+
+      for (let i = 0; i < 8; i++) {
+        const movieLink = document.createElement("li")
+        if (moviesList[i] !== undefined && moviesList[i].overview !== "") {
+          movieLink.innerHTML = `
+        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">${moviesList[i].title}</button>
+      `
+          movieLink.addEventListener("click", () => {
+            movieDetails(moviesList[i]);
+          });
+          searchResultDropdown.appendChild(movieLink)
+        }
+      }
+    }
+
+    if (actors.total_results !== 0) {
+      for (let i = 0; i < 8; i++) {
+        const actorLink = document.createElement("li")
+        if (actorsList[i].known_for_department === "Acting" && actorsList[i] !== undefined && actorsList[i].profile_path !== null) {
+
+          actorLink.innerHTML = `
+        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">${actorsList[i].name}</button>
+      `
+          actorLink.addEventListener("click", () => {
+            actorDetails(actorsList[i].id);
+          });
+          searchResultDropdown.appendChild(actorLink)
+        }
+      }
+    }
+  }
+
+
+}
+
+const search = async (e) => {
+  const movieRes = await fetchSearchMovies(e.target.value)
+  const actorRes = await fetchSearchActors(e.target.value)
+  renderSearchResults(movieRes, actorRes)
+
+  // renderActorResults(actorRes)
+}
+
 
 ////////////////////test fetch////////////////
-fetch(
-  "https://api.themoviedb.org/3/movie/502356/videos?api_key=476f803b63576c60c48c20f0ba1cd92d")
-  // fetch("https://api.themoviedb.org/3/movie/550?api_key=476f803b63576c60c48c20f0ba1cd92d")
-  .then((res) => res.json())
-  .then((data) => console.log(data));
+// fetch("https://api.themoviedb.org/3/movie/502356/videos?api_key=476f803b63576c60c48c20f0ba1cd92d")
+// fetch("https://api.themoviedb.org/3/movie/550?api_key=476f803b63576c60c48c20f0ba1cd92d")
+// fetch("https://api.themoviedb.org/3/search/movie?api_key=476f803b63576c60c48c20f0ba1cd92d&query=J")
+// .then((res) => res.json())
+// .then((data) => console.log(data));
 
 ///////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", autorun);
 homeBtn.addEventListener("click", autorun);
 actorsBtn.addEventListener("click", actorsPage);
+searchBar.addEventListener("keyup", search)
+
