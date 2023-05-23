@@ -7,6 +7,7 @@ const CONTAINER = document.querySelector(".container");
 ////////////////////////////////////////////////////////////////
 const apiKey = "476f803b63576c60c48c20f0ba1cd92d";
 const homeBtn = document.querySelector("#homeBtn");
+const genreBtn = document.querySelector(".genreBtn");
 
 // Don't touch this function please
 const constructUrl = (path) => {
@@ -20,7 +21,6 @@ const autorun = async () => {
   const movies = await fetchMovies();
   renderMovies(movies.results);
 };
-
 
 // Home Page: Movies List Page
 
@@ -49,7 +49,6 @@ const renderMovies = (movies) => {
     CONTAINER.appendChild(movieDiv);
   });
 };
-
 
 // Single Movie Page: single movie details are presented.
 
@@ -191,7 +190,6 @@ const movieDetails = async (movie) => {
   renderTrailer(trailerRes);
 };
 
-
 // Actor List Page
 
 const fetchActorList = async () => {
@@ -224,6 +222,74 @@ const actorsPage = async () => {
   const actors = await fetchActorList();
   renderActorsList(actors);
 };
+
+// Genre List Dropdown
+
+const fetchGenreList = async () => {
+  const url = constructUrl(`genre/movie/list`);
+  const res = await fetch(url);
+  return res.json();
+};
+
+const fetchMoviesByGenre = async (genreId) => {
+  const url = `${TMDB_BASE_URL}/discover/movie?api_key=${atob(
+    "NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI="
+  )}&with_genres=${genreId}`;
+  const res = await fetch(url);
+  return res.json();
+};
+
+const renderGenreList = (genresObj) => {
+  const genreUl = document.querySelector("#genre-list");
+  let genreLi;
+  const genresList = genresObj.genres;
+  genreUl.innerHTML = ``;
+  for (let i = 0; i < genresList.length; i++) {
+    genreLi = document.createElement("li");
+    const genre = genresList[i];
+    genreLi.innerHTML = `
+    <a
+  href="#"
+  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">${genre.name}</a>
+   `;
+    genreLi.addEventListener("click", () => {
+      moviesByGenreDropdown(genre.id);
+    });
+    genreUl.appendChild(genreLi);
+  }
+};
+
+const renderMoviesByGenre = (movies) => {
+  CONTAINER.innerHTML = ``; // Cleans page
+  const moviesList = movies.results;
+  console.log(moviesList);
+  for (let i = 0; i < moviesList.length; i++) {
+    const movie = moviesList[i];
+    const movieDiv = document.createElement("div");
+    movieDiv.innerHTML = `
+      <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
+      movie.title
+    } poster">
+      <h3>${movie.title}</h3>
+      `;
+
+    movieDiv.addEventListener("click", () => {
+      movieDetails(movie);
+    });
+    CONTAINER.appendChild(movieDiv);
+  }
+};
+
+const genreDropdown = async () => {
+  const genres = await fetchGenreList();
+  renderGenreList(genres);
+};
+
+const moviesByGenreDropdown = async (genreId) => {
+  const movies = await fetchMoviesByGenre(genreId);
+  renderMoviesByGenre(movies);
+};
+
 
 
 // Single Actor Page
@@ -311,15 +377,22 @@ const actorDetails = async (actorId) => {
   renderActorMovies(relatedMovies);
 };
 
-
 ////////////////////test fetch////////////////
+// fetch(
+//   "https://api.themoviedb.org/3/genre/movie/list?api_key=476f803b63576c60c48c20f0ba1cd92d"
+// )
+//   // fetch("https://api.themoviedb.org/3/movie/550?api_key=476f803b63576c60c48c20f0ba1cd92d")
+//   .then((res) => res.json())
+// .then((data) => console.log(data));
+
 fetch(
-  "https://api.themoviedb.org/3/movie/502356/videos?api_key=476f803b63576c60c48c20f0ba1cd92d")
-  // fetch("https://api.themoviedb.org/3/movie/550?api_key=476f803b63576c60c48c20f0ba1cd92d")
-  .then((res) => res.json())
-  .then((data) => console.log(data));
+  "https://api.themoviedb.org/3/discover/movie?api_key=476f803b63576c60c48c20f0ba1cd92d&with_genres=28`"
+).then((res) => res.json());
+// .then((data) => console.log(data));
 
 ///////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", autorun);
 homeBtn.addEventListener("click", autorun);
 actorsBtn.addEventListener("click", actorsPage);
+genreBtn.addEventListener("click", genreDropdown);
+
