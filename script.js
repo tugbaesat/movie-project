@@ -8,6 +8,7 @@ const CONTAINER = document.querySelector(".container");
 const apiKey = "476f803b63576c60c48c20f0ba1cd92d";
 const homeBtn = document.querySelector("#homeBtn");
 const genreBtn = document.querySelector(".genreBtn");
+const searchBar = document.querySelector("#default-search");
 
 // Don't touch this function please
 const constructUrl = (path) => {
@@ -262,7 +263,7 @@ const renderGenreList = (genresObj) => {
 const renderMoviesByGenre = (movies) => {
   CONTAINER.innerHTML = ``; // Cleans page
   const moviesList = movies.results;
-  console.log(moviesList);
+  // console.log(moviesList);
   for (let i = 0; i < moviesList.length; i++) {
     const movie = moviesList[i];
     const movieDiv = document.createElement("div");
@@ -289,8 +290,6 @@ const moviesByGenreDropdown = async (genreId) => {
   const movies = await fetchMoviesByGenre(genreId);
   renderMoviesByGenre(movies);
 };
-
-
 
 // Single Actor Page
 
@@ -377,6 +376,72 @@ const actorDetails = async (actorId) => {
   renderActorMovies(relatedMovies);
 };
 
+// Searchbar
+
+const fetchSearchMovies = async (keyword) => {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/search/movie?api_key=476f803b63576c60c48c20f0ba1cd92d&query=${keyword}`
+  );
+  return res.json();
+};
+
+const fetchSearchActors = async (keyword) => {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/search/person?api_key=476f803b63576c60c48c20f0ba1cd92d&query=${keyword}`
+  );
+  return res.json();
+};
+const renderSearchResults = (movies, actors) => {
+  const searchResultDropdown = document.querySelector("#searchResultDropdown");
+  searchResultDropdown.innerHTML = ``;
+  const moviesList = movies.results;
+  const actorsList = actors.results;
+
+  if (moviesList.length === 0 && actorsList.length === 0) {
+    searchResultDropdown.innerHTML = `
+    <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">No Matching Results</button>`;
+  } else {
+    if (movies.total_results !== 0) {
+      for (let i = 0; i < 8; i++) {
+        const movieLink = document.createElement("li");
+        if (moviesList[i] !== undefined && moviesList[i].overview !== "") {
+          movieLink.innerHTML = `
+        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">${moviesList[i].title}</button>`;
+
+          movieLink.addEventListener("click", () => {
+            movieDetails(moviesList[i]);
+          });
+          searchResultDropdown.appendChild(movieLink);
+        }
+      }
+    }
+
+    if (actors.total_results !== 0) {
+      for (let i = 0; i < 8; i++) {
+        const actorLink = document.createElement("li");
+        if (
+          actorsList[i].known_for_department === "Acting" &&
+          actorsList[i] !== undefined &&
+          actorsList[i].profile_path !== null
+        ) {
+          actorLink.innerHTML = `
+        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">${actorsList[i].name}</button>`;
+          actorLink.addEventListener("click", () => {
+            actorDetails(actorsList[i].id);
+          });
+          searchResultDropdown.appendChild(actorLink);
+        }
+      }
+    }
+  }
+};
+const search = async (e) => {
+  const movieRes = await fetchSearchMovies(e.target.value);
+  const actorRes = await fetchSearchActors(e.target.value);
+  renderSearchResults(movieRes, actorRes);
+  // renderActorResults(actorRes)
+};
+
 ////////////////////test fetch////////////////
 // fetch(
 //   "https://api.themoviedb.org/3/genre/movie/list?api_key=476f803b63576c60c48c20f0ba1cd92d"
@@ -395,4 +460,4 @@ document.addEventListener("DOMContentLoaded", autorun);
 homeBtn.addEventListener("click", autorun);
 actorsBtn.addEventListener("click", actorsPage);
 genreBtn.addEventListener("click", genreDropdown);
-
+searchBar.addEventListener("keyup", search);
