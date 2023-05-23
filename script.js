@@ -36,19 +36,26 @@ const fetchMovies = async () => {
 // You'll need to play with this function in order to add features and enhance the style.
 const renderMovies = (movies) => {
   CONTAINER.innerHTML = ``; // Cleans page
+  const moviesContainer = document.createElement("div")
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
         <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${movie.title
       } poster">
+        <div class="ml-3 mt-3">
         <h3>${movie.title}</h3>
+        
+        </div>
+        
         `;
-
     movieDiv.addEventListener("click", () => {
       movieDetails(movie);
     });
-    CONTAINER.appendChild(movieDiv);
+    movieDiv.setAttribute("class", "card pb-4")
+    moviesContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 gap-4")
+    moviesContainer.appendChild(movieDiv);
   });
+  CONTAINER.appendChild(moviesContainer);
 };
 
 // Single Movie Page: single movie details are presented.
@@ -196,20 +203,26 @@ const fetchActorList = async () => {
 
 const renderActorsList = (actors) => {
   CONTAINER.innerHTML = ``; // Cleans page
-  // console.log(actors)
+  console.log(actors)
+  const actorsContainer = document.createElement("div")
   actors.results.map((actor) => {
     const actorDiv = document.createElement("div");
-
     if (actor.known_for_department === "Acting") {
       actorDiv.innerHTML = `
               <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${actor.name
         } poster">
-              <h3>${actor.name}</h3>`;
+              <h3 class="ml-3 mt-3">${actor.name}</h3>`;
       actorDiv.addEventListener("click", () => {
         actorDetails(actor.id);
       });
+      actorDiv.setAttribute("class", "card pb-4 w-4/12")
+      actorsContainer.appendChild(actorDiv)
+    } else {
+      actorDiv.remove()
     }
-    CONTAINER.appendChild(actorDiv);
+    actorsContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 justify-items-center")
+    
+    CONTAINER.appendChild(actorsContainer);
   });
 };
 
@@ -262,9 +275,8 @@ const renderMoviesByGenre = (movies) => {
     const movie = moviesList[i];
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
-      <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
-      movie.title
-    } poster">
+      <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${movie.title
+      } poster">
       <h3>${movie.title}</h3>
       `;
 
@@ -295,18 +307,25 @@ const fetchSingleActor = async (actorId) => {
 
 const renderSingleActor = (actor) => {
   CONTAINER.innerHTML = ``; // Cleans page
-  const birthDeath = document.createElement("div");
+  // const birthDeath = document.createElement("div");
 
-  birthDeath.innerHTML = `
-  <h2>Death:</h2>
-  <p>${actor.deathday}</p>
-  `;
+  // birthDeath.innerHTML = `
+  // <h2>Death:</h2>
+  // <p>${actor.deathday}</p>
+  // `;
 
   let gender;
   if (actor.gender === 2) {
     gender = "Male";
   } else {
     gender = "Female";
+  }
+
+  let birthDeath;
+  if(actor.deathday === null){
+    birthDeath = `${actor.birthday} / -`
+  }else{
+    birthDeath = `${actor.birthday} / ${actor.deathday}`
   }
 
   const actorDiv = document.createElement("div");
@@ -323,17 +342,17 @@ const renderSingleActor = (actor) => {
   <h2>Biography:</h2>
   <p>${actor.biography}</p>
 
-  <h2>Birthday:</h2>
-  <p>${actor.birthday}</p>
+  <h2>Birthday / Deathday:</h2>
+  <p>${birthDeath}</p>
   
 <ul id="related-movies"></ul>
   `;
 
   CONTAINER.appendChild(actorDiv);
 
-  if (actor.deathday !== null) {
-    CONTAINER.appendChild(birthDeath);
-  }
+  // if (actor.deathday !== null) {
+  //   CONTAINER.appendChild(birthDeath);
+  // }
 };
 
 const fetchActorMovies = async (actorId) => {
