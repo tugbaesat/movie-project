@@ -456,9 +456,9 @@ const search = async (e) => {
 ////////////////////test fetch////////////////
 
 fetch(
-  "https://api.themoviedb.org/3/discover/movie?api_key=476f803b63576c60c48c20f0ba1cd92d&with_genres=28`"
-).then((res) => res.json());
-// .then((data) => console.log(data));
+  "https://api.themoviedb.org/3/genre/movie/list?api_key=476f803b63576c60c48c20f0ba1cd92d&with_genres=28`"
+).then((res) => res.json())
+.then((data) => console.log(data));
 
 ///////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", autorun);
