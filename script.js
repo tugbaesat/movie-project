@@ -9,6 +9,7 @@ const apiKey = "476f803b63576c60c48c20f0ba1cd92d";
 const homeBtn = document.querySelector("#homeBtn");
 const searchBar = document.querySelector("#default-search")
 const genreBtn = document.querySelector(".genreBtn");
+const aboutBtn = document.querySelector("#aboutBtn");
 
 
 // Don't touch this function please
@@ -21,7 +22,8 @@ const constructUrl = (path) => {
 // Don't touch this function please
 const autorun = async () => {
   const movies = await fetchMovies();
-  renderMovies(movies.results);
+  const genreList = await fetchGenreList();
+  renderMovies(movies.results, genreList);
 };
 
 // Home Page: Movies List Page
@@ -34,24 +36,39 @@ const fetchMovies = async () => {
 };
 
 // You'll need to play with this function in order to add features and enhance the style.
-const renderMovies = (movies) => {
+const renderMovies = (movies, genreList) => {
   CONTAINER.innerHTML = ``; // Cleans page
   const moviesContainer = document.createElement("div")
+  const pageHeader = document.createElement("h1")
+  pageHeader.textContent=`FEATURED MOVIES`
+  pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
+  CONTAINER.appendChild(pageHeader)
   movies.map((movie) => {
+    const genreIdbyMovie = movie.genre_ids
+    const genreId = genreList.genres
+    let genreListByMovie = []
+
+    for (let i = 0; i < genreIdbyMovie.length; i++) {
+      for (let j = 0; j < genreId.length; j++) {
+        if(genreIdbyMovie[i] == genreId[j].id){
+          genreListByMovie.push(genreId[j].name)
+        }
+      }
+    }
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${movie.title
-      } poster">
-        <div class="ml-3 mt-3">
-        <h3>${movie.title}</h3>
-        
-        </div>
+        <div class="h-[200px] sm:h-[350px] md:h-[200px] xl:h-[250px] 2xl:h-[300px]" style="background-image: url(${BACKDROP_BASE_URL + movie.backdrop_path}); background-size: cover; background-position: center; background-repeat: no-repeat; "><div class="card-info">
+        <h1 class="text-2xl font-extrabold mb-4 text-amber-400">${movie.title}</h1>
+        <h3>Genres: ${genreListByMovie.join(", ")}</h3>
+        <h3>Rating: ${movie.vote_average}</h3>
+
+        </div></div></div>
         
         `;
     movieDiv.addEventListener("click", () => {
       movieDetails(movie);
     });
-    movieDiv.setAttribute("class", "card pb-4")
+    movieDiv.setAttribute("class", "card")
     moviesContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 gap-4")
     moviesContainer.appendChild(movieDiv);
   });
@@ -203,25 +220,28 @@ const fetchActorList = async () => {
 
 const renderActorsList = (actors) => {
   CONTAINER.innerHTML = ``; // Cleans page
-  console.log(actors)
   const actorsContainer = document.createElement("div")
+  const pageHeader = document.createElement("h1")
+  pageHeader.textContent=`POPULAR ACTORS`
+  pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
+  CONTAINER.appendChild(pageHeader)
   actors.results.map((actor) => {
     const actorDiv = document.createElement("div");
     if (actor.known_for_department === "Acting") {
       actorDiv.innerHTML = `
               <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${actor.name
         } poster">
-              <h3 class="ml-3 mt-3">${actor.name}</h3>`;
+              <h3 class="text-center mt-3 text-amber-400 font-bold">${actor.name}</h3>`;
       actorDiv.addEventListener("click", () => {
         actorDetails(actor.id);
       });
-      actorDiv.setAttribute("class", "card pb-4 w-4/12")
+      actorDiv.setAttribute("class", "card pb-3 w-8/12  bg-stone-950")
       actorsContainer.appendChild(actorDiv)
     } else {
       actorDiv.remove()
     }
-    actorsContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 justify-items-center")
-    
+    actorsContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-6")
+
     CONTAINER.appendChild(actorsContainer);
   });
 };
@@ -322,9 +342,9 @@ const renderSingleActor = (actor) => {
   }
 
   let birthDeath;
-  if(actor.deathday === null){
+  if (actor.deathday === null) {
     birthDeath = `${actor.birthday} / -`
-  }else{
+  } else {
     birthDeath = `${actor.birthday} / ${actor.deathday}`
   }
 
@@ -452,13 +472,20 @@ const search = async (e) => {
   renderSearchResults(movieRes, actorRes);
   // renderActorResults(actorRes)
 };
+const aboutPage = () => {
 
+  CONTAINER.innerHTML = ``
+  
+
+}
 ////////////////////test fetch////////////////
 
-fetch(
-  "https://api.themoviedb.org/3/genre/movie/list?api_key=476f803b63576c60c48c20f0ba1cd92d&with_genres=28`"
-).then((res) => res.json())
-.then((data) => console.log(data));
+// fetch(
+//   "https://api.themoviedb.org/3/genre/movie/list?api_key=476f803b63576c60c48c20f0ba1cd92d"
+//   // "https://api.themoviedb.org/3/movie/500?api_key=476f803b63576c60c48c20f0ba1cd92d"
+//   // https://api.themoviedb.org/3/genre/movie/list?api_key=[MY_KEY]&language=en-US
+// ).then((res) => res.json())
+//   .then((data) => console.log(data));
 
 ///////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", autorun);
@@ -467,3 +494,4 @@ actorsBtn.addEventListener("click", actorsPage);
 searchBar.addEventListener("keyup", search)
 genreBtn.addEventListener("click", genreDropdown);
 searchBar.addEventListener("keyup", search);
+aboutBtn.addEventListener("click", aboutPage)
