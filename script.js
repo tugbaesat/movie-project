@@ -57,13 +57,13 @@ const renderMovies = (movies, genreList) => {
     }
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
-        <div class="h-[200px] sm:h-[350px] md:h-[200px] xl:h-[250px] 2xl:h-[300px]" style="background-image: url(${BACKDROP_BASE_URL + movie.backdrop_path}); background-size: cover; background-position: center; background-repeat: no-repeat; "><div class="card-info">
-        <h1 class="text-2xl font-extrabold mb-4 text-amber-400">${movie.title}</h1>
-        <h3>Genres: ${genreListByMovie.join(", ")}</h3>
-        <h3>Rating: ${movie.vote_average}</h3>
-
-        </div></div></div>
-        
+        <div class="h-[200px] sm:h-[350px] md:h-[200px] xl:h-[250px] 2xl:h-[300px]" style="background-image: url(${BACKDROP_BASE_URL + movie.backdrop_path}); background-size: cover; background-position: center; background-repeat: no-repeat; ">
+          <div class="card-info">
+            <h1 class="lg:text-xl md:text-lg text-2xl font-extrabold mb-4 text-amber-400">${movie.title}</h1>
+            <h3 class="lg:text-base md:text-sm">Genres: ${genreListByMovie.join(", ")}</h3>
+            <h3 class="lg:text-base md:text-sm">Rating: ${movie.vote_average}</h3>
+          </div>
+        </div>
         `;
     movieDiv.addEventListener("click", () => {
       movieDetails(movie);
@@ -88,37 +88,47 @@ const fetchMovie = async (movieId) => {
 // Renders a single movie
 const renderMovie = (movie) => {
   CONTAINER.innerHTML = `
-    <div class="row">
-        <div class="col-md-4">
-             <img id="movie-backdrop" src=${BACKDROP_BASE_URL + movie.backdrop_path
-    }>
-        </div>
+  <h2 id="movie-title" class="text-amber-400 text-center p-6 text-2xl">${movie.title}</h2>
+<div class="text-white grid justify-center gap-10 mb-10">
 
-        <div class="col-md-8">
-            <h2 id="movie-title">${movie.title}</h2>
-            <p id="movie-release-date"><b>Release Date:</b> ${movie.release_date
-    }</p>
-            <p id="movie-runtime"><b>Runtime:</b> ${movie.runtime} Minutes</p>
-            <h3>Overview:</h3>
-            <p id="movie-overview">${movie.overview}</p>
-            <h3>Language:</h3>
-            <p>${movie.spoken_languages[0].name}</p>
-        </div>
+  <div class="grid md:grid-cols-2 gap-4 ">
+    <div class="">
+    <img id="movie-backdrop" src=${BACKDROP_BASE_URL + movie.backdrop_path}>
+    </div>
 
-        <div id="trailer"></div>
-        
-        </div>
-            <h3>Actors:</h3>
-            <ul id="actors" class="list-unstyled"></ul>
-            <h3>Similar Movies:</h3>
-            <ul id="similar" class="list-unstyled"></ul>
-            <h3>Production Company:</h3>
-            <div>
-            <img id="movie-backdrop" src=${BACKDROP_BASE_URL + movie.production_companies[0].logo_path
-    }>
-            <h3>${movie.production_companies[0].name}</h3>
-            </div>
-    </div>`;
+    <div class="grid gap-2 text-slate-400">
+   <p id="movie-release-date"><b>Release Date:</b> ${movie.release_date}</p>
+   <p id="movie-runtime"><b>Runtime:</b> ${movie.runtime} Minutes</p>
+   <p id="movie-overview"> <b>Overview:</b> ${movie.overview}</p>
+   <p><b>Language:</b> ${movie.spoken_languages[0].name}</p>
+    </div>
+
+  </div>
+
+  <div id="trailer" class="justify-self-center">
+  </div>
+
+</div>
+
+<div class="text-amber-400 text-center mb-10">
+  <h3 class="p-2 text-2xl">ACTORS</h3>
+  <ul id="actors" class="list-unstyled grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-4"></ul>
+</div>
+
+<div class="text-amber-400 text-center mb-10">
+  <h3 class="pb-6 text-2xl">SIMILAR MOVIES</h3>
+  <ul id="similar" class="list-unstyled grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-4"></ul>
+</div>
+
+<div class="text-amber-400 text-center grid gap-2">
+  <h3 class="p-2 text-2xl">PRODUCTION COMPANY</h3>
+    <div class="w-1/6 justify-self-center">
+      <img  id="movie-backdrop" src=${BACKDROP_BASE_URL + movie.production_companies[0].logo_path}>
+      <h3 class="mt-4 text-slate-400">${movie.production_companies[0].name}</h3>
+    </div>
+</div>
+
+    `;
 };
 
 // This function is to fetch Actors.
@@ -135,10 +145,11 @@ const renderActors = (actors) => {
 
   for (let i = 0; i < 5; i++) {
     const actorLi = document.createElement("li");
+    actorLi.setAttribute("class", "card text-slate-400")
     actorLi.innerHTML = `
         <img src="${BACKDROP_BASE_URL + cast[i].profile_path}" alt="${cast[i].title
       } poster">
-        <h3>${cast[i].name}</h3>`;
+        <h3 class="pt-2">${cast[i].name}</h3>`;
     actorsUl.appendChild(actorLi);
     actorLi.addEventListener("click", () => {
       actorDetails(cast[i].id);
@@ -160,10 +171,11 @@ const renderSimilar = (movies) => {
 
   for (let i = 0; i < 5; i++) {
     const similarLi = document.createElement("li");
+    similarLi.setAttribute("class", "card text-slate-400")
     similarLi.innerHTML = `
         <img src="${BACKDROP_BASE_URL + similarMovies[i].poster_path}" alt="${similarMovies[i].original_title
       } poster">
-        <h3>${similarMovies[i].original_title}</h3>`;
+        <h3 class="pt-2">${similarMovies[i].original_title}</h3>`;
     similarLi.addEventListener("click", () => {
       movieDetails(similarMovies[i]);
     });
@@ -189,6 +201,7 @@ const renderTrailer = (videos) => {
       const sourceLink = `https://www.youtube.com/embed/${trailerKey}`;
       const iFrame = document.createElement("iframe");
       iFrame.setAttribute("src", sourceLink);
+      iFrame.setAttribute("class", "video")
       trailerDiv.appendChild(iFrame);
     }
   }
