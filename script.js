@@ -300,24 +300,63 @@ const renderGenreList = (genresObj) => {
   }
 };
 
-const renderMoviesByGenre = (movies) => {
+const renderMoviesByGenre = (movies, genreId, genreList) => {
   CONTAINER.innerHTML = ``; // Cleans page
-  const moviesList = movies.results;
-  // console.log(moviesList);
-  for (let i = 0; i < moviesList.length; i++) {
-    const movie = moviesList[i];
+  console.log(genreId)
+  const moviesContainer = document.createElement("div")
+  const pageHeader = document.createElement("h1")
+  pageHeader.textContent=`FEATURED MOVIES`
+  pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
+  CONTAINER.appendChild(pageHeader)
+  movies.map((movie) => {
+
+    const genreIdbyMovie = movie.genre_ids
+    const genreId = genreList.genres
+    let genreListByMovie = []
+
+    for (let i = 0; i < genreIdbyMovie.length; i++) {
+      for (let j = 0; j < genreId.length; j++) {
+        if(genreIdbyMovie[i] == genreId[j].id){
+          genreListByMovie.push(genreId[j].name)
+          pageHeader.textContent=`${genreId[j].name}`
+        }
+      }
+    }
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
-      <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${movie.title
-      } poster">
-      <h3>${movie.title}</h3>
-      `;
-
+        <div class="h-[200px] sm:h-[350px] md:h-[200px] xl:h-[250px] 2xl:h-[300px]" style="background-image: url(${BACKDROP_BASE_URL + movie.backdrop_path}); background-size: cover; background-position: center; background-repeat: no-repeat; ">
+          <div class="card-info">
+            <h1 class="lg:text-xl md:text-lg text-2xl font-extrabold mb-4 text-amber-400">${movie.title}</h1>
+            <h3 class="lg:text-base md:text-sm">Genres: ${genreListByMovie.join(", ")}</h3>
+            <h3 class="lg:text-base md:text-sm">Rating: ${movie.vote_average}</h3>
+          </div>
+        </div>
+        `;
     movieDiv.addEventListener("click", () => {
       movieDetails(movie);
     });
-    CONTAINER.appendChild(movieDiv);
-  }
+    movieDiv.setAttribute("class", "card")
+    moviesContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 gap-4")
+    moviesContainer.appendChild(movieDiv);
+  });
+  CONTAINER.appendChild(moviesContainer);
+  // CONTAINER.innerHTML = ``; // Cleans page
+  // const moviesList = movies.results;
+  // // console.log(moviesList);
+  // for (let i = 0; i < moviesList.length; i++) {
+  //   const movie = moviesList[i];
+  //   const movieDiv = document.createElement("div");
+  //   movieDiv.innerHTML = `
+  //     <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${movie.title
+  //     } poster">
+  //     <h3>${movie.title}</h3>
+  //     `;
+
+  //   movieDiv.addEventListener("click", () => {
+  //     movieDetails(movie);
+  //   });
+  //   CONTAINER.appendChild(movieDiv);
+  // }
 };
 
 const genreDropdown = async () => {
@@ -327,7 +366,8 @@ const genreDropdown = async () => {
 
 const moviesByGenreDropdown = async (genreId) => {
   const movies = await fetchMoviesByGenre(genreId);
-  renderMoviesByGenre(movies);
+  const genreList = await fetchGenreList()
+  renderMoviesByGenre(movies.results, genreId, genreList);
 };
 
 // Single Actor Page
