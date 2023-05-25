@@ -43,7 +43,7 @@ h3 {
 }
 
 nav {
-  z-index: 999;
+  z-index: 2;
 }
 
 @keyframes up {
@@ -65,6 +65,8 @@ nav {
   animation-name: up;
   animation-duration: 0.3s;
   animation-fill-mode: forwards;
+  cursor: pointer;
+
 }
 
 

@@ -86,7 +86,8 @@ const fetchMovie = async (movieId) => {
 
 // You'll need to play with this function in order to add features and enhance the style.
 // Renders a single movie
-const renderMovie = (movie) => {
+const renderMovie = (movie, credits) => {
+  // console.log(movie)
   CONTAINER.innerHTML = `
   <h2 id="movie-title" class="text-amber-400 text-center p-6 mb-6 text-4xl">${movie.title}</h2>
 <div class="text-white grid justify-center gap-10 mb-10">
@@ -98,7 +99,10 @@ const renderMovie = (movie) => {
 
     <div class="grid gap-2 lg:gap-0 lg:text-xl lg:py-4 text-slate-400">
    <p id="movie-release-date"><b>Release Date:</b> ${movie.release_date}</p>
+   <p id="movie-director"></p>
    <p id="movie-runtime"><b>Runtime:</b> ${movie.runtime} Minutes</p>
+   <p id="movie-overview"> <b>Rating:</b> ${movie.vote_average}</p>
+   <p id="movie-overview"> <b>Vote Count:</b> ${movie.vote_count}</p>
    <p id="movie-overview"> <b>Overview:</b> ${movie.overview}</p>
    <p><b>Language:</b> ${movie.spoken_languages[0].name}</p>
     </div>
@@ -140,8 +144,20 @@ const fetchActors = async (movieId) => {
 
 //Renders 5 Actors
 const renderActors = (actors) => {
+  console.log(actors.crew)
   const cast = actors.cast;
+  const crew = actors.crew;
   const actorsUl = document.querySelector("#actors");
+  const directorP = document.querySelector("#movie-director")
+
+  for (let i = 0; i < crew.length; i++) {
+    if(crew[i].known_for_department === 'Directing'){
+
+      directorP.innerHTML = `<b>Director: </b> ${crew[i].name}
+      ` 
+      break;
+    }
+  }
 
   for (let i = 0; i < 5; i++) {
     const actorLi = document.createElement("li");
@@ -221,6 +237,7 @@ const movieDetails = async (movie) => {
 
   const trailerRes = await fetchMovieTrailer(movie.id);
   renderTrailer(trailerRes);
+
 };
 
 // Actor List Page
@@ -339,23 +356,6 @@ const renderMoviesByGenre = (movies, genreId, genreList) => {
     moviesContainer.appendChild(movieDiv);
   });
   CONTAINER.appendChild(moviesContainer);
-  // CONTAINER.innerHTML = ``; // Cleans page
-  // const moviesList = movies.results;
-  // // console.log(moviesList);
-  // for (let i = 0; i < moviesList.length; i++) {
-  //   const movie = moviesList[i];
-  //   const movieDiv = document.createElement("div");
-  //   movieDiv.innerHTML = `
-  //     <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${movie.title
-  //     } poster">
-  //     <h3>${movie.title}</h3>
-  //     `;
-
-  //   movieDiv.addEventListener("click", () => {
-  //     movieDetails(movie);
-  //   });
-  //   CONTAINER.appendChild(movieDiv);
-  // }
 };
 
 const genreDropdown = async () => {
@@ -378,6 +378,7 @@ const fetchSingleActor = async (actorId) => {
 };
 
 const renderSingleActor = (actor) => {
+  console.log(actor)
   CONTAINER.innerHTML = ``; // Cleans page
   let gender;
   if (actor.gender === 2) {
@@ -392,32 +393,35 @@ const renderSingleActor = (actor) => {
   } else {
     birthDeath = `${actor.birthday} / ${actor.deathday}`
   }
+  CONTAINER.innerHTML = `
+  <h2 id="actor-title" class="text-amber-400 text-center p-6 mb-6 text-4xl">${actor.name}</h2>
+<div class="text-white grid justify-center gap-10 mb-10">
 
-  const actorDiv = document.createElement("div");
-  actorDiv.innerHTML = `
-  <img src="${BACKDROP_BASE_URL + actor.profile_path}" alt="${actor.name
-    } poster">
-  <h1>${actor.name}</h1>
-  <h2>Gender:</h2>
-  <p>${gender}</p>
-  
-  <h2>Popularity:</h2>
-  <p>${actor.popularity}</p>
-  
-  <h2>Biography:</h2>
-  <p>${actor.biography}</p>
+  <div class="grid md:grid-cols-1 gap-8">
+    <div class="grid">
+    <img id="actor-backdrop" class="w-8/12 lg:w-3/12 justify-self-center" src=${BACKDROP_BASE_URL + actor.profile_path
+    }>
+    </div>
 
-  <h2>Birthday / Deathday:</h2>
-  <p>${birthDeath}</p>
-  
-<ul id="related-movies"></ul>
-  `;
+    <div class="text-slate-400 text-xl px-6">
+   <p id="actor-gender"><b>Gender:</b> ${gender}</p>
+   <p id="actor-popularity"> <b>Popularity:</b> ${actor.popularity}</p>
+   <p id="actor-birthDeath"> <b>Birth Date / Death Date:</b> ${birthDeath}</p>
+    </div>
 
-  CONTAINER.appendChild(actorDiv);
+  </div>
 
-  // if (actor.deathday !== null) {
-  //   CONTAINER.appendChild(birthDeath);
-  // }
+  <div id="trailer" class="justify-self-center">
+  <h3 class="text-center text-amber-400 text-xl font-bold mb-6">BIOGRAPHY</h3>
+  <p id="actor-bio" class="text-justify text-slate-400 px-6">${actor.biography}</p>
+  </div>
+  </div>
+  <div class="text-slate-400 text-center mb-10">
+  <h3 class="pb-6 text-2xl text-amber-400">MOVIES THE ACTOR PARTICIPATED IN</h3>
+  <ul id="related-movies" class="list-unstyled grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 gap-4"></ul>
+ </div>
+
+    `
 };
 
 const fetchActorMovies = async (actorId) => {
@@ -428,13 +432,12 @@ const fetchActorMovies = async (actorId) => {
 
 const renderActorMovies = (movies) => {
   const relatedMovies = document.querySelector("#related-movies");
-  // console.log(relatedMovies);
   for (let i = 0; i < 5; i++) {
     const actorLi = document.createElement("li");
     actorLi.innerHTML = `
         <img src="${BACKDROP_BASE_URL + movies.cast[i].poster_path}" alt="${movies.cast[i].original_title
       } poster">
-        <h3>${movies.cast[i].original_title}</h3>`;
+        <h3 class="p-2">${movies.cast[i].original_title}</h3>`;
 
     actorLi.addEventListener("click", () => {
       // console.log(movies);
@@ -465,6 +468,7 @@ const fetchSearchActors = async (keyword) => {
   );
   return res.json();
 };
+
 const renderSearchResults = (movies, actors) => {
   const searchResultDropdown = document.querySelector("#searchResultDropdown");
   searchResultDropdown.innerHTML = ``;
@@ -515,9 +519,62 @@ const search = async (e) => {
   renderSearchResults(movieRes, actorRes);
   // renderActorResults(actorRes)
 };
+
+// About Page
 const aboutPage = () => {
 
-  CONTAINER.innerHTML = ``
+  CONTAINER.innerHTML = `
+
+  <div>
+          <h4 class="text-amber-400 text-center mb-2 text-xl">BROUGHT TO YOU BY</h4>
+            <ul class="grid grid-cols-2 gap-4 text-center text-slate-400">
+                <li class="grid grid-cols-2" >
+                <div class="justify-self-center">
+                
+                <a  href="https://github.com/tugbaesat"><img class="w-2/6 card rounded-full"
+                            src="https://avatars.githubusercontent.com/u/114342008?v=4" alt="" srcset=""></a>
+                </div>
+                            
+                            <div>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+
+                            </div>
+                       
+                </li>
+                <li class="grid grid-cols-2"><a class="self-end" href="https://github.com/aymanrecoded"><img class="w-2/6 card rounded-full"
+                            src="https://avatars.githubusercontent.com/u/127232481?v=4" alt="" srcset=""></a>
+                            <div>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+
+                            </div>
+                </li>
+                <li class="grid grid-cols-2"><a class="self-end" href="https://github.com/sadikbarisyilmaz"><img class="w-2/6 card rounded-full"
+                            src="https://avatars.githubusercontent.com/u/89347761?v=4" alt="" srcset=""></a>
+                            <div>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+
+                            </div>
+                </li>
+                <li class="grid grid-cols-2"><a class="self-end" href="https://github.com/sadikbarisyilmaz"><img class="w-2/6 card rounded-full"
+                            src="https://avatars.githubusercontent.com/u/89347761?v=4" alt="" srcset=""></a>
+                            <div>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+                            <p><b>Name:</b> Tuğba Esat Şahin </p>
+
+                            </div>
+                </li>
+            </ul>
+        </div>
+  
+  
+  `
 
 }
 
