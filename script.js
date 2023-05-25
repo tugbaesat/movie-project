@@ -40,7 +40,7 @@ const renderMovies = (movies, genreList) => {
   CONTAINER.innerHTML = ``; // Cleans page
   const moviesContainer = document.createElement("div")
   const pageHeader = document.createElement("h1")
-  pageHeader.textContent=`FEATURED MOVIES`
+  pageHeader.textContent = `FEATURED MOVIES`
   pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
   CONTAINER.appendChild(pageHeader)
   movies.map((movie) => {
@@ -50,7 +50,7 @@ const renderMovies = (movies, genreList) => {
 
     for (let i = 0; i < genreIdbyMovie.length; i++) {
       for (let j = 0; j < genreId.length; j++) {
-        if(genreIdbyMovie[i] == genreId[j].id){
+        if (genreIdbyMovie[i] == genreId[j].id) {
           genreListByMovie.push(genreId[j].name)
         }
       }
@@ -88,15 +88,15 @@ const fetchMovie = async (movieId) => {
 // Renders a single movie
 const renderMovie = (movie) => {
   CONTAINER.innerHTML = `
-  <h2 id="movie-title" class="text-amber-400 text-center p-6 text-2xl">${movie.title}</h2>
+  <h2 id="movie-title" class="text-amber-400 text-center p-6 mb-6 text-4xl">${movie.title}</h2>
 <div class="text-white grid justify-center gap-10 mb-10">
 
-  <div class="grid md:grid-cols-2 gap-4 ">
+  <div class="grid md:grid-cols-2 gap-4">
     <div class="">
     <img id="movie-backdrop" src=${BACKDROP_BASE_URL + movie.backdrop_path}>
     </div>
 
-    <div class="grid gap-2 text-slate-400">
+    <div class="grid gap-2 lg:gap-0 lg:text-xl lg:py-4 text-slate-400">
    <p id="movie-release-date"><b>Release Date:</b> ${movie.release_date}</p>
    <p id="movie-runtime"><b>Runtime:</b> ${movie.runtime} Minutes</p>
    <p id="movie-overview"> <b>Overview:</b> ${movie.overview}</p>
@@ -235,7 +235,7 @@ const renderActorsList = (actors) => {
   CONTAINER.innerHTML = ``; // Cleans page
   const actorsContainer = document.createElement("div")
   const pageHeader = document.createElement("h1")
-  pageHeader.textContent=`POPULAR ACTORS`
+  pageHeader.textContent = `POPULAR ACTORS`
   pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
   CONTAINER.appendChild(pageHeader)
   actors.results.map((actor) => {
@@ -302,10 +302,9 @@ const renderGenreList = (genresObj) => {
 
 const renderMoviesByGenre = (movies, genreId, genreList) => {
   CONTAINER.innerHTML = ``; // Cleans page
-  console.log(genreId)
   const moviesContainer = document.createElement("div")
   const pageHeader = document.createElement("h1")
-  pageHeader.textContent=`FEATURED MOVIES`
+  pageHeader.textContent = `FEATURED MOVIES`
   pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
   CONTAINER.appendChild(pageHeader)
   movies.map((movie) => {
@@ -316,9 +315,9 @@ const renderMoviesByGenre = (movies, genreId, genreList) => {
 
     for (let i = 0; i < genreIdbyMovie.length; i++) {
       for (let j = 0; j < genreId.length; j++) {
-        if(genreIdbyMovie[i] == genreId[j].id){
+        if (genreIdbyMovie[i] == genreId[j].id) {
           genreListByMovie.push(genreId[j].name)
-          pageHeader.textContent=`${genreId[j].name}`
+          pageHeader.textContent = `${genreId[j].name}`
         }
       }
     }
@@ -380,13 +379,6 @@ const fetchSingleActor = async (actorId) => {
 
 const renderSingleActor = (actor) => {
   CONTAINER.innerHTML = ``; // Cleans page
-  // const birthDeath = document.createElement("div");
-
-  // birthDeath.innerHTML = `
-  // <h2>Death:</h2>
-  // <p>${actor.deathday}</p>
-  // `;
-
   let gender;
   if (actor.gender === 2) {
     gender = "Male";
@@ -435,7 +427,6 @@ const fetchActorMovies = async (actorId) => {
 };
 
 const renderActorMovies = (movies) => {
-  console.log(movies.cast);
   const relatedMovies = document.querySelector("#related-movies");
   // console.log(relatedMovies);
   for (let i = 0; i < 5; i++) {
@@ -461,7 +452,6 @@ const actorDetails = async (actorId) => {
 };
 
 // Searchbar
-
 const fetchSearchMovies = async (keyword) => {
   const res = await fetch(
     `https://api.themoviedb.org/3/search/movie?api_key=476f803b63576c60c48c20f0ba1cd92d&query=${keyword}`
@@ -528,13 +518,50 @@ const search = async (e) => {
 const aboutPage = () => {
 
   CONTAINER.innerHTML = ``
-  
 
 }
+
+//Hero Header
+const renderHero = (movies) => {
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+  const movie = movies.results[getRandomInt(19)]
+  const heroSection = document.querySelector("#hero")
+  heroSection.setAttribute("style", `background-image: url(${BACKDROP_BASE_URL + movie.backdrop_path}); background-size: cover; background-position: center; background-repeat: no-repeat;`)
+
+  heroSection.innerHTML = `
+  
+    <div id="hero-info" class="grid md:grid-cols-1 lg:grid-cols-2 gap-12  p-6">
+      <div class="grid justify-items-end content-center">
+       <img class="w-4/6 " src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="">
+      </div>
+      <div class="grid gap-4 w-4/6 content-center">
+        <h1 class="text-amber-400 text-3xl font-bold">${movie.original_title}</h1>
+        <p class="text-slate-300">"${movie.overview
+    }"</p>
+        <button id="hero-button" class="text-2xl hover:text-amber-400">Go to Movie</button>
+      </div>
+    </div>
+  
+  `
+  document.querySelector("#hero-button").addEventListener("click", async () => {
+    const targetMovie = await fetchMovie(movie.id)
+    movieDetails(targetMovie)
+  })
+}
+
+const heroHeader = async () => {
+  const movies = await fetchMovies();
+  renderHero(movies)
+}
+heroHeader()
+
+
 ////////////////////test fetch////////////////
 
 // fetch(
-//   "https://api.themoviedb.org/3/genre/movie/list?api_key=476f803b63576c60c48c20f0ba1cd92d"
+//   "https://api.themoviedb.org/3/movie/now_playing?api_key=476f803b63576c60c48c20f0ba1cd92d"
 //   // "https://api.themoviedb.org/3/movie/500?api_key=476f803b63576c60c48c20f0ba1cd92d"
 //   // https://api.themoviedb.org/3/genre/movie/list?api_key=[MY_KEY]&language=en-US
 // ).then((res) => res.json())
