@@ -4,12 +4,14 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
-////////////////////////////////////////////////////////////////
-const apiKey = "476f803b63576c60c48c20f0ba1cd92d";
 const homeBtn = document.querySelector("#homeBtn");
 const searchBar = document.querySelector("#default-search")
 const genreBtn = document.querySelector(".genreBtn");
 const aboutBtn = document.querySelector("#aboutBtn");
+const nowPlayingBtn = document.querySelector("#now-playing")
+const upcomingBtn = document.querySelector("#upcoming")
+const popularBtn = document.querySelector("#popular")
+const topRatedBtn = document.querySelector("#top-rated")
 
 
 // Don't touch this function please
@@ -37,6 +39,7 @@ const fetchMovies = async () => {
 
 // You'll need to play with this function in order to add features and enhance the style.
 const renderMovies = (movies, genreList) => {
+  window.scrollTo(0, 0)
   CONTAINER.innerHTML = ``; // Cleans page
   const moviesContainer = document.createElement("div")
   const pageHeader = document.createElement("h1")
@@ -87,7 +90,7 @@ const fetchMovie = async (movieId) => {
 // You'll need to play with this function in order to add features and enhance the style.
 // Renders a single movie
 const renderMovie = (movie, credits) => {
-  // console.log(movie)
+  window.scrollTo(0, 0)
   CONTAINER.innerHTML = `
   <h2 id="movie-title" class="text-amber-400 text-center p-6 mb-6 text-4xl">${movie.title}</h2>
 <div class="text-white grid justify-center gap-10 mb-10">
@@ -144,24 +147,23 @@ const fetchActors = async (movieId) => {
 
 //Renders 5 Actors
 const renderActors = (actors) => {
-  console.log(actors.crew)
   const cast = actors.cast;
   const crew = actors.crew;
   const actorsUl = document.querySelector("#actors");
   const directorP = document.querySelector("#movie-director")
 
   for (let i = 0; i < crew.length; i++) {
-    if(crew[i].known_for_department === 'Directing'){
+    if (crew[i].known_for_department === 'Directing') {
 
       directorP.innerHTML = `<b>Director: </b> ${crew[i].name}
-      ` 
+      `
       break;
     }
   }
 
   for (let i = 0; i < 5; i++) {
     const actorLi = document.createElement("li");
-    actorLi.setAttribute("class", "card text-slate-400")
+    actorLi.setAttribute("class", "card text-slate-400 py-2")
     actorLi.innerHTML = `
         <img src="${BACKDROP_BASE_URL + cast[i].profile_path}" alt="${cast[i].title
       } poster">
@@ -187,11 +189,12 @@ const renderSimilar = (movies) => {
 
   for (let i = 0; i < 5; i++) {
     const similarLi = document.createElement("li");
-    similarLi.setAttribute("class", "card text-slate-400")
+    similarLi.setAttribute("class", "card text-slate-400 py-2 grid")
     similarLi.innerHTML = `
         <img src="${BACKDROP_BASE_URL + similarMovies[i].poster_path}" alt="${similarMovies[i].original_title
       } poster">
         <h3 class="pt-2">${similarMovies[i].original_title}</h3>`;
+
     similarLi.addEventListener("click", () => {
       movieDetails(similarMovies[i]);
     });
@@ -249,6 +252,7 @@ const fetchActorList = async () => {
 };
 
 const renderActorsList = (actors) => {
+  window.scrollTo(0, 0)
   CONTAINER.innerHTML = ``; // Cleans page
   const actorsContainer = document.createElement("div")
   const pageHeader = document.createElement("h1")
@@ -308,7 +312,7 @@ const renderGenreList = (genresObj) => {
     genreLi.innerHTML = `
     <a
   href="#"
-  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">${genre.name}</a>
+  class="block px-4 py-2 text-slate-400 hover:bg-gray-700">${genre.name}</a>
    `;
     genreLi.addEventListener("click", () => {
       moviesByGenreDropdown(genre.id);
@@ -318,12 +322,20 @@ const renderGenreList = (genresObj) => {
 };
 
 const renderMoviesByGenre = (movies, genreId, genreList) => {
+  window.scrollTo(0, 0)
   CONTAINER.innerHTML = ``; // Cleans page
   const moviesContainer = document.createElement("div")
   const pageHeader = document.createElement("h1")
-  pageHeader.textContent = `FEATURED MOVIES`
-  pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
+  const genreIdList = genreList.genres
+
+  for (let i = 0; i < genreIdList.length; i++) {
+    if (genreIdList[i].id === genreId) {
+      pageHeader.textContent = `${genreIdList[i].name.toUpperCase()}`
+    }
+  }
+
   CONTAINER.appendChild(pageHeader)
+  pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
   movies.map((movie) => {
 
     const genreIdbyMovie = movie.genre_ids
@@ -334,10 +346,11 @@ const renderMoviesByGenre = (movies, genreId, genreList) => {
       for (let j = 0; j < genreId.length; j++) {
         if (genreIdbyMovie[i] == genreId[j].id) {
           genreListByMovie.push(genreId[j].name)
-          pageHeader.textContent = `${genreId[j].name}`
+
         }
       }
     }
+
     const movieDiv = document.createElement("div");
     movieDiv.innerHTML = `
         <div class="h-[200px] sm:h-[350px] md:h-[200px] xl:h-[250px] 2xl:h-[300px]" style="background-image: url(${BACKDROP_BASE_URL + movie.backdrop_path}); background-size: cover; background-position: center; background-repeat: no-repeat; ">
@@ -355,6 +368,11 @@ const renderMoviesByGenre = (movies, genreId, genreList) => {
     moviesContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 gap-4")
     moviesContainer.appendChild(movieDiv);
   });
+
+
+
+
+
   CONTAINER.appendChild(moviesContainer);
 };
 
@@ -378,7 +396,7 @@ const fetchSingleActor = async (actorId) => {
 };
 
 const renderSingleActor = (actor) => {
-  console.log(actor)
+  window.scrollTo(0, 0)
   CONTAINER.innerHTML = ``; // Cleans page
   let gender;
   if (actor.gender === 2) {
@@ -429,18 +447,17 @@ const fetchActorMovies = async (actorId) => {
   const res = await fetch(url);
   return res.json();
 };
-
 const renderActorMovies = (movies) => {
   const relatedMovies = document.querySelector("#related-movies");
   for (let i = 0; i < 5; i++) {
     const actorLi = document.createElement("li");
     actorLi.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + movies.cast[i].poster_path}" alt="${movies.cast[i].original_title
+        <img src="${BACKDROP_BASE_URL + movies.cast[i].poster_path}" alt="${movies.cast[i].title
       } poster">
-        <h3 class="p-2">${movies.cast[i].original_title}</h3>`;
+        <h3 class="p-2">${movies.cast[i].title}</h3>`;
+    actorLi.setAttribute("class", "card grid py-2")
 
     actorLi.addEventListener("click", () => {
-      // console.log(movies);
       movieDetails(movies.cast[i]);
     });
     relatedMovies.appendChild(actorLi);
@@ -522,52 +539,43 @@ const search = async (e) => {
 
 // About Page
 const aboutPage = () => {
-
+  window.scrollTo(0, 0)
   CONTAINER.innerHTML = `
 
-  <div>
-          <h4 class="text-amber-400 text-center mb-2 text-xl">BROUGHT TO YOU BY</h4>
-            <ul class="grid grid-cols-2 gap-4 text-center text-slate-400">
-                <li class="grid grid-cols-2" >
-                <div class="justify-self-center">
-                
-                <a  href="https://github.com/tugbaesat"><img class="w-2/6 card rounded-full"
+  <div class=" sm:mb-20 md:mb-0">
+          <h4 class="text-amber-400 text-center mb-8 text-2xl sm:text-3xl">BROUGHT TO YOU BY</h4>
+            <ul class="grid lg:grid-cols-2 gap-4 text-center text-slate-400 text-xs sm:text-base">
+                <li class="card flex p-4 justify-around" >
+              
+                <a class="w-3/12"  href="https://github.com/tugbaesat"><img class="rounded-full"
                             src="https://avatars.githubusercontent.com/u/114342008?v=4" alt="" srcset=""></a>
-                </div>
+           
                             
-                            <div>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-
+                            <div class="grid content-center">
+                            <p><b>Tuğba Esat Şahin</b></p>
+                            <p class="py-2" >Front-End Developer</p>                         
                             </div>
                        
                 </li>
-                <li class="grid grid-cols-2"><a class="self-end" href="https://github.com/aymanrecoded"><img class="w-2/6 card rounded-full"
+                <li class="card flex p-4 justify-around"><a class="w-3/12 " href="https://github.com/aymanrecoded"><img class="rounded-full"
                             src="https://avatars.githubusercontent.com/u/127232481?v=4" alt="" srcset=""></a>
-                            <div>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-
+                            <div class="grid content-center">
+                            <p><b>Ayman Attar</b></p>
+                            <p class="py-2" >Front-End Developer</p>
                             </div>
                 </li>
-                <li class="grid grid-cols-2"><a class="self-end" href="https://github.com/sadikbarisyilmaz"><img class="w-2/6 card rounded-full"
+                <li class="card flex p-4 justify-around"><a class="w-3/12 " href="https://github.com/sadikbarisyilmaz"><img class="rounded-full"
                             src="https://avatars.githubusercontent.com/u/89347761?v=4" alt="" srcset=""></a>
-                            <div>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-
+                            <div class="grid content-center">
+                            <p><b>Sadık Barış Yılmaz</b></p>
+                            <p class="py-2" >Front-End Developer</p>
                             </div>
                 </li>
-                <li class="grid grid-cols-2"><a class="self-end" href="https://github.com/sadikbarisyilmaz"><img class="w-2/6 card rounded-full"
-                            src="https://avatars.githubusercontent.com/u/89347761?v=4" alt="" srcset=""></a>
-                            <div>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-                            <p><b>Name:</b> Tuğba Esat Şahin </p>
-
+                <li class="card flex p-4 justify-around"><a class="w-3/12 " href="https://github.com/rscavuslu"><img class="rounded-full"
+                            src="https://avatars.githubusercontent.com/u/126991580?v=4" alt="" srcset=""></a>
+                            <div class="grid content-center">
+                            <p><b>Rıfat Samet Çavuşlu</b></p>
+                            <p class="py-2" >Front-End Developer</p>
                             </div>
                 </li>
             </ul>
@@ -594,7 +602,7 @@ const renderHero = (movies) => {
        <img class="w-4/6 " src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="">
       </div>
       <div class="grid gap-4 w-4/6 content-center">
-        <h1 class="text-amber-400 text-3xl font-bold">${movie.original_title}</h1>
+        <h1 class="text-amber-400 text-3xl font-bold">${movie.title}</h1>
         <p class="text-slate-300">"${movie.overview
     }"</p>
         <button id="hero-button" class="text-2xl hover:text-amber-400">Go to Movie</button>
@@ -614,17 +622,110 @@ const heroHeader = async () => {
 }
 heroHeader()
 
+//Filter
+const fetchNowPlaying = async () => {
+  const url = constructUrl(`movie/now_playing`);
+  const res = await fetch(url);
+  return res.json();
+};
+const fetchUpcoming = async () => {
+  const url = constructUrl(`movie/upcoming`);
+  const res = await fetch(url);
+  return res.json();
+};
+const fetchPopular = async () => {
+  const url = constructUrl(`movie/popular`);
+  const res = await fetch(url);
+  return res.json();
+};
 
-////////////////////test fetch////////////////
+const fetchTopRated = async () => {
+  const url = constructUrl(`movie/top_rated`);
+  const res = await fetch(url);
+  return res.json();
+};
 
-// fetch(
-//   "https://api.themoviedb.org/3/movie/now_playing?api_key=476f803b63576c60c48c20f0ba1cd92d"
-//   // "https://api.themoviedb.org/3/movie/500?api_key=476f803b63576c60c48c20f0ba1cd92d"
-//   // https://api.themoviedb.org/3/genre/movie/list?api_key=[MY_KEY]&language=en-US
-// ).then((res) => res.json())
-//   .then((data) => console.log(data));
+const renderFilteredMovies = async(moviesRes, genreList, eventId) => {
+  window.scrollTo(0, 0)
+  CONTAINER.innerHTML = ``; // Cleans page
+  const movies = moviesRes.results
+  const moviesContainer = document.createElement("div")
+  const pageHeader = document.createElement("h1")
+  switch (eventId) {
+    case "upcoming":
+      pageHeader.textContent="UPCOMING"
+      break;
+    case "popular":
+      pageHeader.textContent="POPULAR"
+      break;
+    case "now-playing":
+      pageHeader.textContent="NOW PLAYING"
+      break;
+    case "top-rated":
+      pageHeader.textContent="TOP RATED"
+      break;
 
-///////////////////////////////////////////
+  }
+  pageHeader.setAttribute("class", "text-center text-amber-400 text-3xl text-bold mb-10")
+  CONTAINER.appendChild(pageHeader)
+  movies.map(async(movie) => {
+    const movieId = movie.id
+    const singleMovie = await fetchMovie(movieId)
+
+    const genreIdbyMovie = movie.genre_ids
+    const genreId = genreList.genres
+    let genreListByMovie = []
+
+    for (let i = 0; i < genreIdbyMovie.length; i++) {
+      for (let j = 0; j < genreId.length; j++) {
+        if (genreIdbyMovie[i] == genreId[j].id) {
+          genreListByMovie.push(genreId[j].name)
+
+        }
+      }
+    }
+    const movieDiv = document.createElement("div");
+    movieDiv.innerHTML = `
+        <div class="h-[200px] sm:h-[350px] md:h-[200px] xl:h-[250px] 2xl:h-[300px]" style="background-image: url(${BACKDROP_BASE_URL + movie.backdrop_path}); background-size: cover; background-position: center; background-repeat: no-repeat; ">
+          <div class="card-info">
+            <h1 class="lg:text-xl md:text-lg text-2xl font-extrabold mb-4 text-amber-400">${movie.title}</h1>
+            <h3 class="lg:text-base md:text-sm">Genres: ${genreListByMovie.join(", ")}</h3>
+            <h3 class="lg:text-base md:text-sm">Rating: ${movie.vote_average}</h3>
+          </div>
+        </div>
+        `;
+    movieDiv.addEventListener("click", () => {
+      movieDetails(singleMovie);
+    });
+    movieDiv.setAttribute("class", "card")
+    moviesContainer.setAttribute("class", "grid md:grid-cols-2 lg:grid-cols-3 gap-4")
+    moviesContainer.appendChild(movieDiv);
+  });
+  CONTAINER.appendChild(moviesContainer);
+}
+const filterMovies = async (e) => {
+  const nowPlayingRes = await fetchNowPlaying()
+  const upcomingRes = await fetchUpcoming()
+  const popularRes = await fetchPopular()
+  const topRatedRes = await fetchTopRated()
+  const genreList = await fetchGenreList();
+  switch (e.target.id) {
+    case "upcoming":
+      renderFilteredMovies(upcomingRes, genreList, e.target.id)
+      break;
+    case "popular":
+      renderFilteredMovies(popularRes, genreList, e.target.id)
+      break;
+    case "now-playing":
+      renderFilteredMovies(nowPlayingRes, genreList, e.target.id)
+      break;
+    case "top-rated":
+      renderFilteredMovies(topRatedRes, genreList, e.target.id)
+      break;
+  }
+}
+
+//Event Listeners
 document.addEventListener("DOMContentLoaded", autorun);
 homeBtn.addEventListener("click", autorun);
 actorsBtn.addEventListener("click", actorsPage);
@@ -632,3 +733,8 @@ searchBar.addEventListener("keyup", search)
 genreBtn.addEventListener("click", genreDropdown);
 searchBar.addEventListener("keyup", search);
 aboutBtn.addEventListener("click", aboutPage)
+nowPlayingBtn.addEventListener("click", (e) => filterMovies(e))
+upcomingBtn.addEventListener("click", (e) => filterMovies(e))
+popularBtn.addEventListener("click", (e) => filterMovies(e))
+topRatedBtn.addEventListener("click", (e) => filterMovies(e))
+

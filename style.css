@@ -2,7 +2,9 @@ body {
   font-family: 'Montserrat', sans-serif;
   background-color: rgb(26, 26, 26);
 }
-
+#logo{
+  font-size: 150%;
+}
 h3 {
   font-weight: bolder;
   font-size: 1.2rem;
