@@ -1,3 +1,5 @@
+[Live Link](https://202303-prm-tr-few.github.io/movie-project-baris-tugba-ayman/)
+
 # Movie Project
 
 This is a movie database project, where it shows movies, their casts, ratings, trailers, related movies, genres, and so on.
