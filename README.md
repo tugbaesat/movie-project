@@ -11,7 +11,7 @@ This project uses The Movie DB API: `https://api.themoviedb.org/3`.
 ## Features: 📖
 
 ### Navbar
-A universal navbar (it appears on every page) to the home page that includes
+An universal navbar (it appears on every page) to the home page that includes
 buttons that go to the following pages:
 
 - Home button, takes you to the home page
@@ -27,7 +27,7 @@ buttons that go to the following pages:
 
 ### Footer
 
-Add a universal footer that includes:
+An universal footer that includes:
 
 - Credit to me and my partner for building the website,
 - Me and my partner's github link inside an icon and optionally, your social
@@ -82,16 +82,24 @@ credits in the single movie page.
 ## Screenshots: 📷
 
 ### Main Page
-![image](https://github.com/tugbaesat/movie-project/assets/114342008/af750d47-1041-4f92-9fd7-a7589a6dfa85)
-
-![image](https://github.com/tugbaesat/movie-project/assets/114342008/30cadb78-fd0d-4db4-8a35-ed014fcd1842)
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/04699a94-ac4a-498e-abe3-c0e8c92cc546)
 
 ### Actors Page
-![image](https://github.com/tugbaesat/movie-project/assets/114342008/7ffb26e5-5df8-433f-9ca3-7c8a57dacc9c)
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/9053a8e2-1524-4c7a-b193-21870a2d466c)
 
 ### Single Actor Page
-![image](https://github.com/tugbaesat/movie-project/assets/114342008/f46dd80e-7fad-4498-9758-2930def6c874)
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/7225a5b1-212b-445a-b264-34192cfc9be2)
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/395941da-f6b9-4ae7-98f9-41ba41c5627b)
 
+### Movie Page
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/6092772d-fd77-497c-b303-1de8680eb7f8)
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/f3100378-8d39-4e89-b635-4ad1a7517dd0)
+
+### Genre Page
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/f2481d06-bba3-4e55-a80e-7c192fc483af)
+
+### Filtered Page
+![image](https://github.com/tugbaesat/movie-project/assets/114342008/8e8d7db8-80e1-4500-b460-c8f4eaa19487)
 
 ## Authors: 💻
 - [@tugbaesat](https://github.com/tugbaesat)
