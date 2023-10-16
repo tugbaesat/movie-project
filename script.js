@@ -4,6 +4,7 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
+const logoBtn = document.querySelector("#logoBtn");
 const homeBtn = document.querySelector("#homeBtn");
 const searchBar = document.querySelector("#default-search")
 const genreBtn = document.querySelector(".genreBtn");
@@ -554,27 +555,12 @@ const aboutPage = () => {
                             <div class="grid content-center">
                             <p><b>Tuğba Esat Şahin</b></p>
                             <p class="py-2" >Front-End Developer</p>                         
-                            </div>
-                       
-                </li>
-                <li class="card flex p-4 justify-around"><a class="w-3/12 " href="https://github.com/aymanrecoded"><img class="rounded-full"
-                            src="https://avatars.githubusercontent.com/u/127232481?v=4" alt="" srcset=""></a>
-                            <div class="grid content-center">
-                            <p><b>Ayman Attar</b></p>
-                            <p class="py-2" >Front-End Developer</p>
-                            </div>
+                            </div>            
                 </li>
                 <li class="card flex p-4 justify-around"><a class="w-3/12 " href="https://github.com/sadikbarisyilmaz"><img class="rounded-full"
                             src="https://avatars.githubusercontent.com/u/89347761?v=4" alt="" srcset=""></a>
                             <div class="grid content-center">
                             <p><b>Sadık Barış Yılmaz</b></p>
-                            <p class="py-2" >Front-End Developer</p>
-                            </div>
-                </li>
-                <li class="card flex p-4 justify-around"><a class="w-3/12 " href="https://github.com/rscavuslu"><img class="rounded-full"
-                            src="https://avatars.githubusercontent.com/u/126991580?v=4" alt="" srcset=""></a>
-                            <div class="grid content-center">
-                            <p><b>Rıfat Samet Çavuşlu</b></p>
                             <p class="py-2" >Front-End Developer</p>
                             </div>
                 </li>
@@ -727,6 +713,7 @@ const filterMovies = async (e) => {
 
 //Event Listeners
 document.addEventListener("DOMContentLoaded", autorun);
+logoBtn.addEventListener("click", autorun);
 homeBtn.addEventListener("click", autorun);
 actorsBtn.addEventListener("click", actorsPage);
 searchBar.addEventListener("keyup", search)
