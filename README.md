@@ -6,7 +6,7 @@ This project uses The Movie DB API: `https://api.themoviedb.org/3`.
 
 ## Live Demo of the Project: 📹
 
-[Movie Project Website](https://202303-prm-tr-few.github.io/movie-project-baris-tugba-ayman/)
+[Movie Project Website](https://movie-project-tugbaesat.vercel.app/)
 
 ## Features: 📖
 
